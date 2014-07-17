@@ -59,8 +59,9 @@ function genereate_password(){
     for ($i = 0; $i < 2; $i++) {
         $n = rand(0, $alphaLength);
         $pass[] = $symbols[$n];
-    } 
-	return implode( shuffle( $pass ) );
+    }
+    shuffle( $pass );
+	return implode( $pass );
 }
 
 ?>

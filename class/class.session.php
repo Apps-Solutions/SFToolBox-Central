@@ -1,82 +1,79 @@
 <?php
 
 class Session {
-	var $name;
-	var $hash;
-	var $level;
-	var $user;
-	var $id; 
-	var $settings;
+	private $profile;
+    private $name;
+	private $user;
+	private $id;
+    private $publicVars;
+    private $requireVars;
+    public $settings;
 
-	function Session(){
-		$this->init();
-		
-		$this->set_settings();
+	function __construct(){
+        $this->publicVars = array(
+            'user' => '',
+            'profile' => 0,
+            'name' => '',
+            'id' => ''
+        ); //default values
+        $this->requireVars = array('user', 'profile', 'id');
+        session_start();
+        $this->set_settings();
+        $in = $this->set_from_session() || $this->set_from_cookie();
+        if(!$in){
+            $this->init();
+        }
 	}
 
 	private function init() {
-		global $Debug;
-		global $facebook;
-		$this->user = "";
-		$this->name = "";
-		$this->level = 0;
-		$this->id = "";
-
-		if ( $this->set_from_session() ) {
-            return TRUE;
-		} else if ( $this->set_from_cookie() ){
-			return TRUE;
-		} else{
-			$this->end_session();
-			return FALSE;
-		}
+        foreach($this->publicVars as $key => $value){
+            $this->set_var($key, $value);
+        }
 	}
-	
-	private function set_settings(){
-		global $Settings;
-		$this->settings = new stdClass;
-		
-		$this->settings->title  = $Settings->get_settings_option('global_sys_title');
-		$this->settings->color1 = $Settings->get_settings_option('global_css_color1');
-		$this->settings->color2 = $Settings->get_settings_option('global_css_color2');
-		$this->settings->color3 = $Settings->get_settings_option('global_css_color3');
-		
-	}
-	
+	public function set_from_login($login){
+        if($login->status != LOGIN_SUCCESS){ return FALSE; }
+        foreach($this->publicVars as $var => $value){
+            $getter = sprintf('get_%s', $var);
+            $this->set_var($var, $login->$getter());
+        }
+        $this->set_permissions();
+        return TRUE;
+    }
 	private function set_from_session(){
-		if (
-			//isset($_SESSION[PFX_SYS . 'name']) && ($_SESSION[PFX_SYS . 'name'] != "") &&
-			isset($_SESSION[ PFX_SYS . 'profile']) && ($_SESSION[ PFX_SYS . 'profile'] != "") &&
-			isset($_SESSION[ PFX_SYS . 'user']) && ($_SESSION[ PFX_SYS . 'user'] != "") &&
-			isset($_SESSION[ PFX_SYS . 'id']) && ($_SESSION[ PFX_SYS . 'id'] != "")
-		) { 
-            $this->name 	= $_SESSION[ PFX_SYS . 'name'];
-			$this->level 	= $_SESSION[ PFX_SYS . 'profile'];
-			$this->user 	= $_SESSION[ PFX_SYS . 'user'];
-			$this->id 		= $_SESSION[ PFX_SYS . 'id']; 
-			if ( $this->level == 1 ){
-				define('IS_ADMIN', TRUE);
-			} else {
-				define('IS_ADMIN', FALSE);
-			}
-			return TRUE;
-		} else {
-			return FALSE;
-		}
+        $valid = TRUE;
+        foreach($this->publicVars as $var => $value){
+            if(in_array($var, $this->requireVars)){
+                $valid = $valid && !empty($_SESSION[PFX_SYS . $var]);
+                if(!$valid) break;
+            }
+            $this->set_var($var, $_SESSION[ PFX_SYS . $var]);
+        }
+        if($valid){
+            $this->set_permissions();
+        }
+        return $valid;
 	}
-	
 	private function set_from_cookie(){
-		if (
-			isset($_COOKIE[PFX_SYS . 'user'] ) && $_COOKIE[PFX_SYS . 'user']  != '' && 
-			isset($_COOKIE[PFX_SYS . 'token']) && $_COOKIE[PFX_SYS . 'token'] != '' 
-		) {
-			$us_usuario	= $_COOKIE[PFX_SYS . 'usr'];
-			$us_password= $_COOKIE[PFX_SYS . 'token'];
-			if ($this->create_session($us_usuario , $us_password)){ 
-				if (stripos( $_SERVER['SCRIPT_NAME'] , SYS_LOGIN ) > 0)  header('location: index.php');
-				//cookie activa y la sesion válida
-			}  else header('location: '.SYS_LOGIN); 
-		} 
+        $success = !empty( $_COOKIE[COOKIE_TOKEN] );
+        if($success){
+            $login = new Login();
+            $login->log_in( $_COOKIE[COOKIE_TOKEN] );
+            $success = $this->set_from_login( $login );
+        }
+        return $success;
+	}
+    private function set_permissions(){
+        define('IS_ADMIN', $this->profile == 1);
+    }
+    private function set_settings(){
+        global $Settings;
+        $this->settings = new stdClass;
+        
+        $this->settings->title  = $Settings->get_settings_option('global_sys_title');
+        $this->settings->color1 = $Settings->get_settings_option('global_css_color1');
+        $this->settings->color2 = $Settings->get_settings_option('global_css_color2');
+        $this->settings->color3 = $Settings->get_settings_option('global_css_color3');
+		
 	}
 
 	public function logged_in() {
@@ -87,8 +84,8 @@ class Session {
         return $this->name;
     } 
             
-	public function get_level() {
-		return $this->level;
+	public function get_profile() {
+		return $this->profile;
 	}
 
 	public function get_user() {
@@ -104,29 +101,23 @@ class Session {
 	}
 
 	public function get_var( $varname ) {
-		return ( isset($_SESSION[$varname]) ? $_SESSION[$varname] : "" );
+		return ( isset($_SESSION[PFX_SYS . $varname]) ? $_SESSION[$varname] : "" );
 	}
 	
 	public function set_var( $varname, $value ) {
-		$_SESSION[$varname] = $value;
+        if(property_exists(get_class($this), $varname)){
+            $_SESSION[PFX_SYS . $varname] = $value;
+            $this->$varname = $value;
+        }
+		
 	}
  
 	public function end_session() {
-		$_SESSION[PFX_SYS . 'name'] 		= "";
-		$_SESSION[PFX_SYS . 'user'] 		= "";
-		$_SESSION[PFX_SYS . 'id'] 		= "";
-		$_SESSION[PFX_SYS . 'profile'] 	= 0;
-		
-		setcookie("meta_tracker_user",	'', time() - 3600 );  
-		setcookie("meta_tracker_token",	'', time() - 3600 );
-		
 		session_destroy();
-		session_start();
+        session_start();
+        $this->init();
 		
-		$this->user = "";
-		$this->name = "";
-		$this->level = 0;
-		$this->id = "";
+		setcookie(COOKIE_TOKEN, '', time() - 3600 );
 	}
 
 }

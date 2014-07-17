@@ -66,10 +66,11 @@
 			switch ( $this->which ){
 				case 'lst_admin_users':
 					$this->query = " SELECT * FROM (  SELECT "
-									. " id_user , us_user, pf_profile, id_profile, CONCAT( co_lastname, ' ', co_name ) as name, co_sex, us_lastlogin " 
+									. " id_user , us_user, pf_profile, id_profile, CONCAT( co_lastname, ' ', co_name ) as name, co_sex, uss_last_login " 
 								. " FROM " . PFX_MAIN_DB . "user u "
 									. " INNER JOIN " . PFX_MAIN_DB . "profile p ON id_profile = us_pf_id_profile  "
 									. "  LEFT JOIN " . PFX_MAIN_DB . "contact c ON co_us_id_user = id_user  "
+                                    . " LEFT JOIN " . PFX_MAIN_DB . "user_session ON uss_us_id_user = id_user"
 								. " WHERE us_status = 1 GROUP BY id_user ) as tbl WHERE id_user > 0 ";
 					$this->group = " GROUP BY id_user ";
 					$this->sidx = ( $this->sidx != 'id') ? $this->sidx : 'id_user';

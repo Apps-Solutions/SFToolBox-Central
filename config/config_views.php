@@ -3,6 +3,11 @@
 
 define("HOME", 					"dashboard");
 define("LOGIN",	 				"login");
+define("LOGOUT",	 				"logout");
+
+/** Error **/
+define("FORBIDDEN",               "ERROR403");
+define("NOT_FOUND",               "ERRROR404");
 
 /** Configuración **/
 define("FRM_APPEARANCE",		"frm_appearance");
@@ -55,7 +60,7 @@ define("PRY_REPORTS", 			"pry_reportes");
 
 
 $uiCommand = array(); 	//Controla los permisos			Titulo						PHP													JS						CSS				AJAX
-$uiCommand[LOGIN]		= array( 	array(1,2,3,4,5), 	"Iniciar Sesion", 			"frm.login.php",									"",						"",				""		);
+$uiCommand[LOGIN]		= array( 	""/*todos*/,     	"Iniciar Sesion", 			"frm.login.php",									"",						"",				""		);
 $uiCommand[HOME]		= array( 	array(1,2,3,4,5),  	"Dashboard", 				DIRECTORY_VIEWS.DIRECTORY_BASE."dashboard.php", 	"",						"",				""		);
 $uiCommand[LST_USER]	= array( 	array(1 ),			"Usuarios", 				DIRECTORY_VIEWS."admin/usuarios.php",  			array("admin.users.js"),	"",				""		); 
 $uiCommand[FRM_CONTACT_META]= array(array(1), 			"Información de Contacto ", DIRECTORY_VIEWS."admin/frm.contact_meta.php",  	array("admin.contact_meta.js"), "",			""		);
@@ -67,6 +72,11 @@ $uiCommand[LST_PRODUCT]  =	array(	array(1),  			"Productos", 				DIRECTORY_VIEWS
 $uiCommand[FRM_PRODUCT]	 =	array(  array(1,2),			"Edición de Producto",		DIRECTORY_VIEWS."admin/frm_product.php",		array("admin.product.js"),	"",				""		); 
 $uiCommand[LST_PDV] 	 =	array(	array(1),  			"PDVs", 					DIRECTORY_VIEWS."admin/lst_pdv.php", 				"",						"",				""		);
 $uiCommand[FRM_PDV]		 =	array(  array(1,2),			"Edición de PDV",			DIRECTORY_VIEWS."admin/frm_pdv.php",			array("admin.pdv.js"),		"",				""		);
+
+/** Error **/
+$uiCommand[FORBIDDEN]	 =	array(  ""/*todos*/,	    "ACCESO DENEGADO",			DIRECTORY_VIEWS.DIRECTORY_BASE."403.php",		"",		                    "",				""		);
+$uiCommand[NOT_FOUND]	 =	array(  ""/*todos*/,	    "NO ENCONTRADO",			DIRECTORY_VIEWS.DIRECTORY_BASE."404.php",		"",		                    "",				""		);
+
 
 /** Configuración **/
 $uiCommand[FRM_APPEARANCE]=	array(	array(1),  			"Apariencia", 				DIRECTORY_VIEWS."config/frm.appearance.php", 		"",						"",				""		);

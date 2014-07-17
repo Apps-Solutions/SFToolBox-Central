@@ -1,19 +1,17 @@
 <?php
 require 'init.php';
- 
-if (isset($_POST['command']) && $_POST['command'] != ''){
-	$command = $_POST['command'];
-} else if (isset($_GET['command']) && $_GET['command'] != ''){
-	$command = $_GET['command'];
-} else $command = HOME;
-
+$command = empty($CONTEXT['command'])? HOME: $CONTEXT['command'];
+if($command == LOGOUT){
+    $Session->end_session();
+    $command = HOME;
+}
 global $mensaje, $error;
 if (isset($_GET['msg'])) $mensaje .= $_GET['msg'];
 if (isset($_GET['err'])) $error .= $_GET['err']; 
 $msg_class = "oculto";
 $err_class = "oculto";
 
-if (isset($_SESSION["cookie_http_vars"]) && !empty($_SESSION["cookie_http_vars"])){
+if (!empty($_SESSION["cookie_http_vars"])){
 
 	foreach ($_SESSION["cookie_http_vars"] as $key => $value) {
 	    foreach ($_SESSION["cookie_http_vars"] as $key => $value) {
@@ -37,9 +35,8 @@ if ($error != ''){
 	$err_class = "";
 	$timer = "error";
 }
-$Index->logic($command); 
-  
-if (!$Session->logged_in()){
+$Index->logic($command);
+if ($Index->get_command() == LOGIN){
 	require_once 'frm.login.php';
 	die(); 
 }
@@ -47,7 +44,7 @@ if (!$Session->logged_in()){
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" )> 
+		<meta charset="utf-8" /> 
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 		<meta content="width=device-width, initial-scale=1" name="viewport" />
 	    <title><?php echo $Index->get_title(); ?></title>

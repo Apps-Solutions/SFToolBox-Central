@@ -58,13 +58,19 @@
 									<span class='error'> <?php $error ?> </span>
 								</div>
 								<div class="form-group">
-									<label class="control-label">Usuario</label>
-									<input type="text" class="form-control" name="user" />
+									<label class="control-label" for="inp_user">Usuario</label>
+									<input type="text" class="form-control" name="user" id="inp_user"/>
 								</div>
 								<div class="form-group">
-									<label class="control-label">Contraseña</label>
-									<input type="password" class="form-control" name="password" />
+									<label class="control-label" for="inp_password">Contraseña</label>
+									<input type="password" class="form-control" name="password" id="inp_password"/>
 								</div>
+                                <div class="checkbox">
+                                    <label for="inp_hold">
+                                        <input type="checkbox" name="hold" id="inp_hold"/>
+                                        No cerrar sesión
+                                    </label>
+                                </div>
 								<div class="text-center">
 									<input type='submit' class="btn btn-success" value='Entrar'> 
 								</div>

@@ -1,5 +1,4 @@
 <?php
-require_once DIRECTORY_CLASS . "class.datatable.php";
 
 global $Index; 
 $listado = new DataTable('lst_admin_users');

@@ -110,12 +110,18 @@ class Index {
 		global $uiCommand;
         global $Session;
 		
-        if(!in_array($Session->get_level(),$uiCommand[$command][0])) {
-            $command = LOGIN; 
+        if( $Session->logged_in() ){
+            if( isset( $uiCommand[$command] ) ){
+                if( !( empty( $uiCommand[$command][0] ) || in_array( $Session->get_profile(), $uiCommand[$command][0] ) ) ){
+                    $command = FORBIDDEN;
+                }
+            }
+            else{
+                $command = NOT_FOUND;
+            }
         }
-
-		if($Session->logged_in() && !isset($uiCommand[$command])) {
-           $command = LOGIN; 
+        else{
+            $command = LOGIN;
         }
 
 		$this->title      = $uiCommand[$command]['1'];

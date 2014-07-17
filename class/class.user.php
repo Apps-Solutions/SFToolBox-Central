@@ -35,9 +35,10 @@ class User{
 		global $obj_bd;
 		$this->error = array();
 		if ( $id_user > 0 ){
-			$query = "SELECT id_user, us_user, id_profile, pf_profile, us_lastlogin "
+			$query = "SELECT id_user, us_user, id_profile, pf_profile, uss_last_login "
 						. " FROM " . PFX_MAIN_DB . "user "
 						. " INNER JOIN " . PFX_MAIN_DB . "profile ON id_profile = us_pf_id_profile "
+                        . "LEFT JOIN " . PFX_MAIN_DB . "user_session ON uss_us_id_user = id_user"
 					. " WHERE id_user = " . $id_user;
 			$info = $obj_bd->query( $query );
 			if ( $info !== FALSE ){
@@ -47,7 +48,7 @@ class User{
 					$this->user	 		= $usr['us_user']; 
 					$this->id_profile 	= $usr['id_profile'];
 					 
-					$this->lastlogin 	= $usr['us_lastlogin']; 
+					$this->lastlogin 	= $usr['uss_last_login']; 
 					
 					$this->set_profile();
 					$this->set_contact();

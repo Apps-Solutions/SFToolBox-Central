@@ -32,7 +32,7 @@
 								<a href="#"> <i class="fa fa-cog"></i> <span class="hidden-sm text">Settings</span> </a>
 							</li>
 							<li>
-								<a href="logout.php"> <i class="fa fa-power-off"></i> <span class="hidden-sm text">Logout</span> </a>
+								<a href="index.php?command=<?php echo LOGOUT;?>"> <i class="fa fa-power-off"></i> <span class="hidden-sm text">Logout</span> </a>
 							</li>
 						</ul>
 					</li>

@@ -10,9 +10,13 @@ define('PFX_SYS', 				'meta_tracker_');
 /****************** Main DB Configuration ******************/ 
 define ("DB_HOST", 				'localhost');
 define ("DB_USERNAME", 			'root');
-define ("DB_PASSWORD", 			'root');
+define ("DB_PASSWORD", 			'');
 define ("DB_NAME", 				'meta_tracker');
-define ("PFX_MAIN_DB", 			'mt_');
+define ("PFX_MAIN_DB", 			'sf_');
+
+/****************** Cookie Configuration ******************/ 
+define("COOKIE_EXPIRATION",      time() + 60 * 60 * 24 * 7); //one week
+define("COOKIE_TOKEN",           PFX_SYS . 'token');
 
 /**************** 	Paths Definitions	 ******************/
 define("DIRECTORY_CLASS",		"class/");
@@ -26,6 +30,8 @@ define("DIRECTORY_AJAX",		"ajax/");
 define("DIRECTORY_IMAGES",		"img/"); 
 
 /**************** 	Errors Definitions	 ****************/
+define("DEBUG_MODE", TRUE);
+
 $error_num = 0;
 define("LOGIN_SUCCESS", 		$error_num++);
 define("LOGIN_BADLOGIN",  		$error_num++);
